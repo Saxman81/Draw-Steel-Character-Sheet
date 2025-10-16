@@ -1,5 +1,0 @@
-Handling roll with ID: 266287972353
-Final result for roll ID 266287972353 is: 9
-Ignoring roll with ID: 270582939649
-Ignoring roll with ID: 274877906945
-Ignoring roll with ID: 279172874241
