@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<style>
+    body {
+        background-color: var(--ts-background-primary);
+        color: var(--ts-color-primary);
+        font-family: 'OptimusPrinceps', sans-serif;
+        font-size: 1.2rem;
+    }
+
+    button {
+        border: 1px solid var(--ts-accessibility-border);
+        color: var(--ts-color-primary);
+        font-family: 'OptimusPrinceps', sans-serif;
+
+        border-radius: 4px;
+        font-size: 1em;
+        padding: 0.2em 3em 0 3em;
+        background-color: var(--ts-button-background);
+        transition: ease-in-out 0.1s;
+    }
+
+    button:hover {
+        background-color: var(--ts-button-hover);
+        transition: ease-in-out 0.2s;
+    }
+
+    button:focus-visible {
+        background-color: var(--ts-button-hover);
+        outline: 3px solid var(--ts-accessibility-focus);
+        outline-offset: -1px;
+        transition: outline-color 0s;
+    }
+</style>
+
+<script>
+    function logSymbioteEvent(event) {
+        console.log(event);
+    }
+
+    function handleRollResult(event) {
+        console.log(event);
+        if (event.kind == "rollResults") {
+            TS.dice.evaluateDiceResultsGroup(event.payload.resultsGroups[0]).then((summedRoll) => {
+                document.getElementById("dice-result").textContent = "The last roll result was: " + summedRoll;
+            });
+        } else if (event.kind == "rollRemoved") {
+            document.getElementById("dice-result").textContent = "A dice roll got removed!";
+        }
+    }
+
+    function roll() {
+        TS.dice.putDiceInTray([{name: "example roll", roll: "D20"}]);
+    }
+</script>
+
+<head>
+    <title>template</title>
+</head>
+
+<body>
+    <h1 style="margin-top: 0">template</h1>
+    <button onclick="roll()">Roll a D20</button>
+    <p id="dice-result"></p>
+</body>
+</html>

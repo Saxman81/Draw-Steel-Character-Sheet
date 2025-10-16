@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Character Sheet</title>
+    <link rel="stylesheet" href="css/generic.css">
+    <link rel="stylesheet" href="css/main_tab.css">
+    <link rel="stylesheet" href="css/details_tab.css">
+    <link rel="stylesheet" href="css/inventory_tab.css">
+    <script src="javascript/sheet_core.js" defer></script>
+    <script src="javascript/main_tab.js" defer></script>
+    <script src="javascript/stamina.js" defer></script>
+    <script src="javascript/resources.js" defer></script>
+    <script src="javascript/details_tab.js" defer></script>
+    <script src="javascript/inventory_tab.js" defer></script>
+    <script src="javascript/notes_tab.js" defer></script>
+    <script src="javascript/rules_tab.js" defer></script>
+    <style>
+    </style>
+    <script>
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            document.getElementById('tab-btn-' + tabId).classList.add('active');
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            showTab('main');
+        });
+    </script>
+</head>
+<body>
+    <div class="tab-bar">
+        <button id="tab-btn-main" class="tab-btn active" onclick="showTab('main')">Main</button>
+        <button id="tab-btn-details" class="tab-btn" onclick="showTab('details')">Details</button>
+        <button id="tab-btn-inventory" class="tab-btn" onclick="showTab('inventory')">Inventory</button>
+        <button id="tab-btn-notes" class="tab-btn" onclick="showTab('notes')">Notes</button>
+        <button id="tab-btn-rules" class="tab-btn" onclick="showTab('rules')">Rules</button>
+    </div>
+    <div id="tab-main" class="tab-content active">
+    </div>
+    <div id="tab-details" class="tab-content">
+    </div>
+    <div id="tab-inventory" class="tab-content">
+    </div>
+    <div id="tab-notes" class="tab-content">
+    </div>
+    <div id="tab-rules" class="tab-content">
+    </div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+/* Details tab styles */
+/* Add details tab specific styles here */
+
+.field-desc.skill-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+}

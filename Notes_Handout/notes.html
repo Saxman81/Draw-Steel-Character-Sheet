@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notes Handouts</title>
+    <link rel="stylesheet" href="notes.css">
+    <script src="notes.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fasthand&display=swap');
+    </style>
+</head>
+
+<body>
+    <div id="draft-note-container" class="hidden">
+        <h1 style="margin-top: 0">Draft Note</h1>
+        <div class="content-row">
+            <textarea id="note-input" placeholder="Note Content" oninput="updatePreview()" maxlength="470"></textarea>
+        </div>
+        <div class="content-row">
+            <label class="label-desc" for="style-select">Style:</label><select id="style-select" onchange="selectStyle()">
+                <option value="plain">Plain</option>
+                <option value="typed">Typed</option>
+                <option value="hand-block">Handwritten (Block)</option>
+                <option value="hand-script">Handwritten (Script)</option>
+            </select>
+        </div>
+        <div class="content-row">
+            <label class="label-desc" for="recipient-select">Recipient:</label><select id="recipient-select"><option value="All">All</option></select>
+        </div>
+        <div class="content-row">
+            <span style="flex-grow: 1"></span><span id="sent-indicator">Sent</span><button style="z-index: 10" onclick="sendNote()">Send</button>
+        </div>
+    </div>
+    <h1 style="margin-top: 0">Note</h1>
+    <div id="note" class="note"></div>
+    <img id="img-handout" class="hidden"></img>
+    <div style="position: fixed; bottom: 0; left: 0; right: 0; margin-top: 2rem; font-size: 1.2rem; padding: 1.2rem; color: var(--ts-accent-primary); background-color: var(--ts-accent-background); border-top: 2px solid var(--ts-accent-primary); border-bottom: 2px solid var(--ts-accent-primary); font-family: Arial, Helvetica, sans-serif;">
+        This Symbiote is intended purely as an example to demonstrate and explain features of the API to developers. It is not a replacement for features on TaleSpire's roadmap, or an indication of how we plan to implement those features.<div style="margin-top: 0.5em;">Due to just being an example it is also not made for use in real play sessions, though it of course can be. If you want to use it, you can remove this message by removing the &lt;div&gt; section with this text from the .html file near the end.
+    </div>
+</body>
+</html>

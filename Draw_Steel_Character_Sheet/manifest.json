@@ -1,0 +1,27 @@
+{
+  "manifestVersion": 1,
+  "name": "Draw Steel Character Sheet",
+  "entryPoint": "/sheet_core.html",
+  "version": "0.1",
+  "descriptionFilePath": "/readme.md",
+  "api": {
+    "version": "0.1",
+    "initTimeout": 10,
+    "subscriptions": {
+      "dice": {
+        "onRollResults": "handleRollResult"
+      },
+      "symbiote": {
+        "onStateChangeEvent": "onStateChangeEvent"
+      }
+    }
+  },
+  "environment": {
+    "webViewBackgroundColor": "#000000",
+    "extras": [
+      "fonts",
+      "icons",
+      "colorStyles"
+    ]
+  }
+}

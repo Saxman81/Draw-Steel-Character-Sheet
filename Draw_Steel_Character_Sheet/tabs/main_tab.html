@@ -1,0 +1,256 @@
+<!-- Character Sheet Main Tab HTML Script -->
+<!--
+    - basic character information and stats
+    - Stamina and Recoveries
+    - Heroic Resource and Surges
+    - Power Rolls
+-->
+
+<!-- Character Information -->
+<div class="container">
+
+    <!-- Name -->
+    <div class="content-row">
+        <label class="field-title">Name</label>
+        <input id="character-name" type="text" class="field-data" style="width: 18em; font-size: 2.5em; text-align: center;">
+    </div>
+
+    <!-- Class and Ancestry -->
+    <div class="content-row" style="display: flex; gap: 2em; align-items: center;">
+        <label class="field-title">Class</label><input id="class" type="text" class="field-data"></input>
+        <label class="field-title">Ancestry</label><input id="ancestry" type="text" class="field-data" style="margin-left:0.5em;"></input>
+    </div>
+    <!-- Subclass and Career -->
+    <div class="content-row" style="display: flex; gap: 2em; align-items: center;">
+        <label class="field-title">Subclass</label><input id="subclass" type="text" class="field-data"></input>
+        <label class="field-title">Career</label><input id="career" type="text" class="field-data"></input>
+    </div>
+    <!-- Level, Exp, Wealth and Renown -->
+    <div class="content-row" style="display: flex; gap: 2em; justify-content: center; align-items: flex-end;">
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <label class="field-title">Level</label>
+            <input id="level" type="number" class="field-data-short" style="width: 4em;" value="0"></input>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <label class="field-title">Exp</label>
+            <input id="exp" type="number" class="field-data-short" style="width: 4em;" value="0"></input>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <label class="field-title">Wealth</label>
+            <input id="wealth" type="number" class="field-data-short" style="width: 4em;" value="0"></input>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center;">
+            <label class="field-title">Renown</label>
+            <input id="renown" type="number" class="field-data-short" style="width: 4em;" value="0"></input>
+        </div>
+    </div>
+    <!-- Victories -->
+    <div class="content-row" style="align-items: center;">
+        <label class="field-title">Victories</label>
+            <div id="victories" style="display: flex; gap: 0.15em; margin-left: 2em;">
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+            <input type="checkbox" class="victory-checkbox"></input>
+        </div>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="container columns-2">
+    <div class="container">
+        <h1>Stats</h1>
+        <!-- Main Stats -->
+        <div class="content-row" style="display: flex; gap: 2em; justify-content: center; align-items: flex-end;">
+            <div style="display: flex; flex-direction: column; align-items: center; width: 5em;">
+                <label class="field-title" style="text-align: center; width: 100%;" data-modifier="no-mod" data-label="Might">Might</label>
+                <input id="might" type="number" class="field-data-short" style="width: 3em;" value="0"></input>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; width: 5em;">
+                <label class="field-title" style="text-align: center; width: 100%;" data-modifier="no-mod" data-label="Agility">Agility</label>
+                <input id="agility" type="number" class="field-data-short" style="width: 3em;" value="0"></input>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; width: 5em;">
+                <label class="field-title" style="text-align: center; width: 100%;" data-modifier="no-mod" data-label="Reason">Reason</label>
+                <input id="reason" type="number" class="field-data-short" style="width: 3em;" value="0"></input>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; width: 5em;">
+                <label class="field-title" style="text-align: center; width: 100%;" data-modifier="no-mod" data-label="Intuition">Intuition</label>
+                <input id="intuition" type="number" class="field-data-short" style="width: 3em;" value="0"></input>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; width: 5em;">
+                <label class="field-title" style="text-align: center; width: 100%;" data-modifier="no-mod" data-label="Presence">Presence</label>
+                <input id="presence" type="number" class="field-data-short" style="width: 3em;" value="0"></input>
+            </div>
+        </div>
+
+        <!-- Other Stats -->
+        <div class="content-row" style="display: flex; gap: 2em; justify-content: center; align-items: flex-end; margin-top: 0.5em;">
+            <div style="display: flex; flex-direction: column; align-items: center; width: 5em;">
+                <label class="field-title" style="text-align: center; width: 100%;">Size</label>
+                <input id="size" type="number" class="field-data-short" style="width: 3em;" value="0"></input>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; width: 5em;">
+                <label class="field-title" style="text-align: center; width: 100%;">Speed</label>
+                <input id="speed" type="number" class="field-data-short" style="width: 3em;" value="0"></input>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; width: 5em;">
+                <label class="field-title" style="text-align: center; width: 100%;">Stability</label>
+                <input id="stability" type="number" class="field-data-short" style="width: 3em;" value="0"></input>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; width: 5em;">
+                <label class="field-title" style="text-align: center; width: 100%;">Disengage</label>
+                <input id="disengage" type="number" class="field-data-short" style="width: 3em;" value="0"></input>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resources -->
+<div class="container" style="margin-top: 2em;">
+    <h1>Resources</h1>
+
+    <!-- Stamina -->
+    <div class="content-row" style="display: flex; gap: 2em; align-items: flex-start; margin-bottom: 1em;">
+        <div style="display: flex; flex-direction: column; align-items: center; height: 12em;">
+            <label class="field-title" style="width: 100%; text-align: center;">Stamina</label>
+            <div title="stamina cannot exceed max value" style="display: flex; flex-direction: column; align-items: center; margin-top: 0.5em;">
+                <input id="stamina-current" type="number" class="field-data-short" style="width: 5em; font-size: 2em; text-align: center; margin-bottom: 0.5em;" value="0" oninput="updateStaminaStatus(); enforceStaminaLimits()">
+                <div style="margin-top: -0.5em; margin-bottom: 0.75em;">
+                    <label class="field-title">Status:</label>
+                    <span id="stamina-status">Healthy</span>
+                </div>
+                <div style="display: flex; gap: 0.5em; align-items: flex-end;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label class="field-desc">Max</label>
+                        <input id="stamina-max" type="number" class="field-data-short" style="width: 3em;" value="0" oninput="enforceStaminaLimits()">
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label class="field-desc">Temp</label>
+                        <input id="stamina-temp" type="number" class="field-data-short" style="width: 3em;" value="0">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; height: 12em;">
+            <label class="field-title" style="width: 100%; text-align: center;">Damage</label>
+            <div style="display: flex; flex-direction: column; align-items: center; margin-top: 0.5em;">
+                <input id="damage-amount" type="number" class="field-data-short" style="width: 2em; font-size: 2em; text-align: center;" min="0" value="0">
+                <div style="display: flex; flex-direction: column; gap: 1.25em; margin-top: 0.5em;">
+                    <button onclick="takeDamage()" style="padding: 0.25em 0.75em; font-size: 0.9em;">Take</button>
+                    <button onclick="heal()" style="padding: 0.25em 0.75em; font-size: 0.9em;">Heal</button>
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; height: 12em;">
+            <label class="field-title" style="width: 100%; text-align: center;">Recoveries</label>
+            <div style="display: flex; flex-direction: column; align-items: center; margin-top: 0.5em;">
+                <input id="recoveries-current" type="number" class="field-data-short" style="width: 4em; font-size: 2em; text-align: center;" min="0" value="0" oninput="enforceRecoveryLimits()">
+                <button onclick="useRecovery()" style="padding: 0.25em 0.75em; margin-top: 0.5em; font-size: 0.9em;">Use Recovery</button>
+                <div style="display: flex; gap: 1em; align-items: flex-end; margin-top: 0.5em;">
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label class="field-desc">Stamina</label>
+                        <input id="recoveries-stamina" type="number" class="field-data-short" style="width: 3em;" value="0">
+                    </div>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <label class="field-desc">Max</label>
+                        <input id="recoveries-max" type="number" class="field-data-short" style="width: 3em;" value="0" oninput="enforceRecoveryLimits()">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Heroic and Surges -->
+    <div class="content-row" style="display: flex; gap: 2em; align-items: flex-start; margin-bottom: 1em;">
+        <div style="display: flex; flex-direction: column; align-items: center; height: 12em;">
+            <label class="field-title" style="width: 100%; text-align: center;">Heroic Resource</label>
+            <div style="display: flex; flex-direction: column; align-items: center; margin-top: 0.5em;">
+                <input id="heroic-current" type="number" class="field-data-short" style="width: 5em; font-size: 2em; text-align: center;" min="0" value="0" oninput="enforceMinZero('heroic-current')">
+                <input id="heroic-name" type="text" class="field-data" style="width: 8em; text-align: center; margin-top: 0.5em;" placeholder="Name">
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; height: 12em;">
+            <label class="field-title" style="width: 100%; text-align: center;">Surges</label>
+            <div style="display: flex; flex-direction: column; align-items: center; margin-top: 0.5em;">
+                <input id="surges-current" type="number" class="field-data-short" style="width: 5em; font-size: 2em; text-align: center;" min="0" value="0" oninput="enforceMinZero('surges-current')">
+                <div style="display: flex; flex-direction: column; align-items: flex-start; margin-top: 0.5em; min-width: 10em;">
+                    <div style="display: flex; align-items: center;">
+                        <span style="width: 6em;">1: Damage +</span>
+                        <input id="surge-damage" type="number" class="field-data-short" style="width: 2em;" value="0">
+                    </div>
+                    <div style="margin-top: 0.25em; margin-left: 0em;">2: Potency + 1</div>
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; align-items: center; height: 12em;">
+            <label class="field-title" style="width: 100%; text-align: center;">Reset</label>
+            <div style="display: flex; flex-direction: column; align-items: center; margin-top: 0.5em;">
+                <button onclick="resetResources()" style="padding: 0.25em 0.75em; font-size: 0.9em;">Reset Resources</button>
+                <button onclick="addRandomHeroic()" style="margin-top: 0.5em; padding: 0.25em 0.75em; font-size: 0.9em;">Add Heroic (1-3)</button>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+
+<!-- Rolls -->
+<div class="container columns-2">
+    <div class="content-row" style="width: 100%">
+        <h1>Rolls</h1>
+    </div>
+    <div class="content-row" style="display: flex; gap: 2em; align-items: flex-start;">
+        <div>
+            <button id="power-roll" class="field-data" style="padding: 0.5em 1em; font-size: 1.1em;" onclick="performPowerRoll()"><i class="ts-icon-d20 ts-icon-small" style="margin-right: 0.2em;"></i>Power Roll</button>
+        </div>
+        <div style="display: flex; gap: 3em;">
+            <div style="display: flex; flex-direction: column; gap: 0.75em;">
+                <div style="display: flex; align-items: center; gap: 0.75em;">
+                    <input type="checkbox" id="might-power" class="power-stat" style="transform: scale(1.2);">
+                    <label for="might-power" class="field-desc" style="font-size: 1.1em;">Might</label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75em;">
+                    <input type="checkbox" id="agility-power" class="power-stat" style="transform: scale(1.2);">
+                    <label for="agility-power" class="field-desc" style="font-size: 1.1em;">Agility</label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75em;">
+                    <input type="checkbox" id="reason-power" class="power-stat" style="transform: scale(1.2);">
+                    <label for="reason-power" class="field-desc" style="font-size: 1.1em;">Reason</label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75em;">
+                    <input type="checkbox" id="intuition-power" class="power-stat" style="transform: scale(1.2);">
+                    <label for="intuition-power" class="field-desc" style="font-size: 1.1em;">Intuition</label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75em;">
+                    <input type="checkbox" id="presence-power" class="power-stat" style="transform: scale(1.2);">
+                    <label for="presence-power" class="field-desc" style="font-size: 1.1em;">Presence</label>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.75em;">
+                <div style="display: flex; align-items: center; gap: 0.75em;">
+                    <input type="checkbox" id="edge-power" name="edge-bane" class="power-modifier" style="transform: scale(1.2);">
+                    <label for="edge-power" class="field-desc" style="font-size: 1.1em;">Edge</label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75em;">
+                    <input type="checkbox" id="bane-power" name="edge-bane" class="power-modifier" style="transform: scale(1.2);">
+                    <label for="bane-power" class="field-desc" style="font-size: 1.1em;">Bane</label>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.75em;">
+                    <input id="other-power" type="number" class="field-data-short" style="width: 1.5em;" value="0" title="Additional modifier to add to power roll">
+                    <label for="other-power" class="field-desc" style="font-size: 1.1em;">Other</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
