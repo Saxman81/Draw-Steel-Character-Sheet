@@ -59,6 +59,24 @@ p {
     width: 3em;
 }
 
+/* Size dropdown specific styling */
+#size.field-data-short {
+    text-align: center;
+    text-align-last: center;
+    padding: 0.2em 0.1em;
+    background: var(--ts-background-secondary);
+    border: 1px solid var(--ts-color-outline);
+    color: var(--ts-color-text);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+#size.field-data-short:focus {
+    outline: none;
+    border-color: var(--ts-color-primary);
+}
+
 .field-desc {
     font-size: 0.7em;
     font-style: italic;

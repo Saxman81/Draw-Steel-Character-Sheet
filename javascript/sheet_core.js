@@ -6,6 +6,10 @@ function loadTabContent(tabId, fileName) {
             document.getElementById('tab-' + tabId).innerHTML = html;
             if (tabId === 'inventory' && window.setupInventoryTabHandlers) {
                 window.setupInventoryTabHandlers();
+                // Initialize inventory bonus system for this tab
+                if (window.initializeInventoryBonusSystem) {
+                    setTimeout(() => window.initializeInventoryBonusSystem(), 100);
+                }
             }
             if (tabId === 'main' && window.setupPowerRollHandlers) {
                 window.setupPowerRollHandlers();
@@ -115,6 +119,11 @@ function onInputChange(input) {
             clearStorageButton.classList.add("danger");
             clearStorageButton.disabled = false;
             clearStorageButton.textContent = "Clear Character Sheet";
+            
+            // Trigger auto-save to file when character name changes
+            if (input.id === 'character-name' && window.saveCharacterData) {
+                setTimeout(() => window.saveCharacterData(), 500);
+            }
         }).catch((setBlobResponse) => {
             TS.debug.log("Failed to store change to local storage: " + setBlobResponse.cause);
             console.error("Failed to store change to local storage:", setBlobResponse);
@@ -275,6 +284,17 @@ function onStateChangeEvent(msg) {
         clearStorageButton = document.getElementById("clear-storage");
         loadStoredData();
         initSheet();
+        
+        // Initialize save system
+        if (window.initializeSaveSystem) {
+            window.initializeSaveSystem();
+        }
+        
+        // Initialize inventory bonus system
+        if (window.initializeInventoryBonusSystem) {
+            window.initializeInventoryBonusSystem();
+        }
+        
         TS.onRollResult.add(handleRollResult);
         TS.debug.log("Subscribed to TS.onRollResult");
         if (TS.dice && TS.dice.onRollResult) {

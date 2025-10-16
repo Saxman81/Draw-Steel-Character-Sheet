@@ -15,6 +15,13 @@
         <input id="character-name" type="text" class="field-data" style="width: 18em; font-size: 2.5em; text-align: center;">
     </div>
 
+    <!-- Save/Load Buttons -->
+    <div class="content-row" style="display: flex; gap: 1em; justify-content: center; margin-top: 1em;">
+        <button id="save-character" style="padding: 0.5em 1em; font-size: 1em; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer;">Save Character</button>
+        <button id="load-character" style="padding: 0.5em 1em; font-size: 1em; background: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer;">Load Character</button>
+        <input id="load-file-input" type="file" accept=".json" style="display: none;">
+    </div>
+
     <!-- Class and Ancestry -->
     <div class="content-row" style="display: flex; gap: 2em; align-items: center;">
         <label class="field-title">Class</label><input id="class" type="text" class="field-data"></input>
@@ -99,7 +106,16 @@
         <div class="content-row" style="display: flex; gap: 2em; justify-content: center; align-items: flex-end; margin-top: 0.5em;">
             <div style="display: flex; flex-direction: column; align-items: center; width: 5em;">
                 <label class="field-title" style="text-align: center; width: 100%;">Size</label>
-                <input id="size" type="number" class="field-data-short" style="width: 3em;" value="0"></input>
+                <select id="size" class="field-data-short" style="width: 3em; text-align: center;">
+                    <option value="1T">1T</option>
+                    <option value="1S">1S</option>
+                    <option value="1M" selected>1M</option>
+                    <option value="1L">1L</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
             </div>
             <div style="display: flex; flex-direction: column; align-items: center; width: 5em;">
                 <label class="field-title" style="text-align: center; width: 100%;">Speed</label>
