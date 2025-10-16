@@ -8,10 +8,13 @@ A comprehensive character sheet symbiote for TaleSpire, specifically designed fo
 - **Complete Character Tracking**: All Draw Steel stats, resources, skills, and character details
 - **Interactive Dice Rolling**: Power rolls with stat selection, edge/bane modifiers, and automatic TaleSpire integration
 - **Resource Management**: Stamina, recoveries, heroic resources, and surges with automatic calculations
-- **Dynamic Inventory**: Add/remove items with auto-expanding text fields and intuitive controls
+- **Enhanced Inventory System**: Add/remove items with quantities, descriptions, and stat bonuses
+- **Item Bonus System**: Equipment can modify character stats, stamina, and recoveries
+- **Visual Stat Indicators**: Green/red badges show active item bonuses on stat fields
 - **Skills System**: Organized skill categories matching Draw Steel's skill structure
-- **Character Save/Load**: Save multiple characters by name and load them as needed
-- **Persistent Storage**: Data persists even after closing TaleSpire
+- **Smart Character Save/Load**: Save multiple characters by name with update-in-place functionality
+- **Persistent Storage**: Uses TaleSpire's localStorage system for reliable data persistence
+- **Auto-Save**: Automatic saving every 30 seconds with change detection
 - **Rules Reference**: Built-in PDF viewer for quick rules lookup
 
 ### Power Roll System
@@ -20,13 +23,26 @@ A comprehensive character sheet symbiote for TaleSpire, specifically designed fo
 - Add custom numerical modifiers
 - Automatic 2d10 + modifiers calculation and submission to TaleSpire dice tray
 
+### Enhanced Inventory System
+- **Item Management**: Add quantities, names, and descriptions for all items
+- **Stat Bonuses**: Items can provide bonuses to any character stat
+- **Resource Bonuses**: Items can increase max stamina, max recoveries, and recovery amounts
+- **Collapsible Interface**: Clean bonus sections that expand when needed
+- **Automatic Calculation**: Base stats + item bonuses = displayed totals
+- **Visual Feedback**: Color-coded indicators show which stats have item bonuses
+
 ### Resource Tracking
 - **Stamina**: Current/Max/Temp with automatic status tracking (Healthy/Winded/Dying/Dead)
 - **Recoveries**: Track available recoveries with use button and stamina restoration
 - **Heroic Resource**: Named resource tracking with random gain functionality
 - **Surges**: Track surges with damage bonus calculations
+- **Item Modifications**: Equipment bonuses automatically applied to max values
 
-All changes are automatically saved to both campaign storage and browser localStorage for maximum persistence.
+### Character Management
+- **Smart Saving**: Updates existing characters instead of creating duplicates
+- **Character Selection**: Visual dialog with character names, classes, levels, and save dates
+- **Duplicate Cleanup**: Built-in tools to manage and clean existing character data
+- **Legacy Support**: Can still import old character files when needed
 
 ## Installation
 
@@ -36,10 +52,21 @@ All changes are automatically saved to both campaign storage and browser localSt
 
 ## Usage
 
+## Usage
+
 ### Character Management
-- Use the save/load bar at the top to manage multiple characters
-- Enter a character name and click "Save" to store the current sheet
-- Select a saved character from the dropdown and click "Load" to restore it
+- Enter a character name and click "Save Character" to store the current sheet
+- Click "Load Character" to see a dialog of all saved characters with details
+- Select any character to load it instantly - no file management required
+- Characters automatically update when saved again (no duplicates created)
+
+### Inventory & Equipment
+- Click "Add Item" to create new inventory entries
+- Set quantities, names, and descriptions for each item
+- Click "Bonuses ▼" to expand stat bonus options for magical/enhanced items
+- Set bonuses for stats (Might, Agility, etc.) or resources (Max Stamina, Recoveries)
+- Bonuses automatically apply to your character stats with visual indicators
+- Green/red badges on stat fields show active item bonuses
 
 ### Power Rolls
 1. Select the stat you want to use for the roll
@@ -53,6 +80,10 @@ All changes are automatically saved to both campaign storage and browser localSt
 - **Use Recovery**: Click to spend a recovery and restore stamina
 - **Reset Resources**: Resets surges and sets heroic resource based on victories
 - **Add Heroic**: Randomly adds 1-3 to your heroic resource
+
+### Maintenance (Advanced)
+- Open browser console and run `cleanupDuplicateCharacters()` to remove any duplicate entries
+- Run `window.recalculateItemBonuses()` to refresh item bonus calculations
 
 ## File Structure
 
@@ -92,9 +123,12 @@ Each tab has its own CSS file in the `css/` folder for easy styling modification
 
 ## Technical Details
 
-- Uses TaleSpire's Symbiote API for dice integration and storage
-- Employs browser localStorage as backup storage for persistence
+- Uses TaleSpire's Symbiote API for dice integration and primary data storage
+- TaleSpire global localStorage provides reliable character persistence
+- Smart save system prevents character duplicates and manages updates efficiently
+- Item bonus system with real-time stat calculation and visual feedback
 - Modular architecture for easy maintenance and customization
+- Auto-save functionality with change detection and 30-second intervals
 - Responsive design optimized for TaleSpire's embedded browser
 
 ## Credits
