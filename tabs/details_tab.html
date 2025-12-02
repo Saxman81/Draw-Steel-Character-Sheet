@@ -14,7 +14,7 @@
 <!-- Languages -->
 <div class="content-row">
     <label class="field-title" for="languages">Languages</label>
-        <textarea id="languages" class="field-data" style="height: 4em; margin-left: 2.2em;"></textarea>
+        <input id="languages" class="field-data" style="margin-left: 2.2em;"></input>
 </div>
 
 <!-- Project Points -->
@@ -25,148 +25,273 @@
 
 <!-- Skills -->
 <div class="content-row">
-        <div class="content-row" style="flex-direction: column; align-items: flex-start; margin-top: 2em;">
-            <h2 style="margin-bottom: 0.5em;">Skills</h2>
-            <div style="border-top: 2px solid #444; margin-bottom: 0.5em; width: 100%;"></div>
+    <div class="content-row" style="flex-direction: column; align-items: flex-start; margin-top: 1em;">
+        <div style="display: flex; align-items: center; gap: 1em; margin-bottom: 0.3em; width: 100%;">
+            <h2 style="margin: 0; font-size: 1.3em;">Skills</h2>
+            <button id="add-skill-btn" type="button" style="background: #444; border: 1px solid #666; color: #fff; padding: 0.3em 0.6em; border-radius: 4px; cursor: pointer; font-size: 0.8em;">
+                + Add Skill
+            </button>
+        </div>
+        <div style="border-top: 1px solid #444; margin-bottom: 0.5em; width: 100%;"></div>
 
-            <!-- Crafting -->
-            <div style="margin-bottom: 0.5em;"><strong>Crafting</strong></div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Alchemy"> Alchemy</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Architecture"> Architecture</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Blacksmithing"> Blacksmithing</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Carpentry"> Carpentry</label>
-                </div>
+        <!-- Selected Skills Container -->
+        <div id="selected-skills" style="width: 100%; min-height: 1.5em;">
+            <!-- Selected skills will appear here dynamically, grouped by category -->
+            <div id="no-skills-message" style="color: #888; font-style: italic; padding: 0.5em 0; font-size: 0.9em;">
+                No skills selected. Click "Add Skill" to choose from the available skills.
             </div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Cooking"> Cooking</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Fletching"> Fletching</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Forgery"> Forgery</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Jewelry"> Jewelry</label>
-                </div>
-            </div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Mechanics"> Mechanics</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Tailoring"> Tailoring</label>
-                </div>
-            </div>
-            <div style="border-top: 2px solid #444; margin-bottom: 0.5em; width: 100%;"></div>
+        </div>
 
-            <!-- Exploration -->
-            <div style="margin-bottom: 0.5em;"><strong>Exploration</strong></div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Climb"> Climb</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Drive"> Drive</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Endurance"> Endurance</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Gymnastics"> Gymnastics</label>
-                </div>
+        <!-- Skill Selection Dropdown (Hidden by default) -->
+        <div id="skill-selector" style="display: none; margin-top: 0.5em; width: 100%; max-width: 300px;">
+            <select id="skill-dropdown" style="width: 100%; padding: 0.4em; font-size: 0.9em; background: #333; border: 1px solid #666; color: #fff;">
+                <option value="">Choose a skill...</option>
+                <!-- Crafting Skills -->
+                <optgroup label="Crafting">
+                    <option value="Alchemy">Alchemy</option>
+                    <option value="Architecture">Architecture</option>
+                    <option value="Blacksmithing">Blacksmithing</option>
+                    <option value="Carpentry">Carpentry</option>
+                    <option value="Cooking">Cooking</option>
+                    <option value="Fletching">Fletching</option>
+                    <option value="Forgery">Forgery</option>
+                    <option value="Jewelry">Jewelry</option>
+                    <option value="Mechanics">Mechanics</option>
+                    <option value="Tailoring">Tailoring</option>
+                </optgroup>
+                <!-- Exploration Skills -->
+                <optgroup label="Exploration">
+                    <option value="Climb">Climb</option>
+                    <option value="Drive">Drive</option>
+                    <option value="Endurance">Endurance</option>
+                    <option value="Gymnastics">Gymnastics</option>
+                    <option value="Heal">Heal</option>
+                    <option value="Jump">Jump</option>
+                    <option value="Lift">Lift</option>
+                    <option value="Navigate">Navigate</option>
+                    <option value="Ride">Ride</option>
+                    <option value="Swim">Swim</option>
+                </optgroup>
+                <!-- Interpersonal Skills -->
+                <optgroup label="Interpersonal">
+                    <option value="Brag">Brag</option>
+                    <option value="Empathize">Empathize</option>
+                    <option value="Flirt">Flirt</option>
+                    <option value="Gamble">Gamble</option>
+                    <option value="Handle Animals">Handle Animals</option>
+                    <option value="Interrogate">Interrogate</option>
+                    <option value="Intimidate">Intimidate</option>
+                    <option value="Lead">Lead</option>
+                    <option value="Lie">Lie</option>
+                    <option value="Music">Music</option>
+                    <option value="Performance">Performance</option>
+                    <option value="Persuade">Persuade</option>
+                    <option value="Read Person">Read Person</option>
+                </optgroup>
+                <!-- Intrigue Skills -->
+                <optgroup label="Intrigue">
+                    <option value="Alertness">Alertness</option>
+                    <option value="Conceal Object">Conceal Object</option>
+                    <option value="Disguise">Disguise</option>
+                    <option value="Eavesdrop">Eavesdrop</option>
+                    <option value="Escape Artist">Escape Artist</option>
+                    <option value="Hide">Hide</option>
+                    <option value="Pick Lock">Pick Lock</option>
+                    <option value="Pick Pocket">Pick Pocket</option>
+                    <option value="Sabotage">Sabotage</option>
+                    <option value="Search">Search</option>
+                    <option value="Sneak">Sneak</option>
+                    <option value="Track">Track</option>
+                </optgroup>
+                <!-- Lore Skills -->
+                <optgroup label="Lore">
+                    <option value="Culture">Culture</option>
+                    <option value="Criminal Underworld">Criminal Underworld</option>
+                    <option value="History">History</option>
+                    <option value="Magic">Magic</option>
+                    <option value="Monsters">Monsters</option>
+                    <option value="Nature">Nature</option>
+                    <option value="Psionics">Psionics</option>
+                    <option value="Religion">Religion</option>
+                    <option value="Rumors">Rumors</option>
+                    <option value="Society">Society</option>
+                    <option value="Strategy">Strategy</option>
+                    <option value="Timescape">Timescape</option>
+                </optgroup>
+            </select>
+            <div style="margin-top: 0.4em;">
+                <button id="add-selected-skill" type="button" style="background: #2d5a2d; border: 1px solid #4a8a4a; color: #fff; padding: 0.2em 0.5em; border-radius: 3px; cursor: pointer; margin-right: 0.4em; font-size: 0.85em;">
+                    Add
+                </button>
+                <button id="cancel-skill-selection" type="button" style="background: #666; border: 1px solid #888; color: #fff; padding: 0.2em 0.5em; border-radius: 3px; cursor: pointer; font-size: 0.85em;">
+                    Cancel
+                </button>
             </div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Heal"> Heal</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Jump"> Jump</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Lift"> Lift</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Navigate"> Navigate</label>
-                </div>
-            </div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Ride"> Ride</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Swim"> Swim</label>
-                </div>
-            </div>
-            <div style="border-top: 2px solid #444; margin-bottom: 0.5em; width: 100%;"></div>
+        </div>
+    </div>
+</div>
 
-            <!-- Interpersonal -->
-            <div style="margin-bottom: 0.5em;"><strong>Interpersonal</strong></div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Brag"> Brag</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Empathize"> Empathize</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Flirt"> Flirt</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Gamble"> Gamble</label>
-                </div>
-            </div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Handle Animals"> Handle Animals</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Interrogate"> Interrogate</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Intimidate"> Intimidate</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Lead"> Lead</label>
-                </div>
-            </div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Lie"> Lie</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Music"> Music</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Performance"> Performance</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Persuade"> Persuade</label>
-                </div>
-            </div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Persuade"> Read Person</label>
-                </div>
-            </div>
-            <div style="border-top: 2px solid #444; margin-bottom: 0.5em; width: 100%;"></div>
+<!-- Abilities -->
+<div class="content-row">
+    <div class="content-row" style="flex-direction: column; align-items: flex-start; margin-top: 2em;">
+        <div style="display: flex; align-items: center; gap: 1em; margin-bottom: 0.5em; width: 100%;">
+            <h2 style="margin: 0;">Abilities</h2>
+            <button id="add-ability-btn" type="button" style="background: #444; border: 1px solid #666; color: #fff; padding: 0.4em 0.8em; border-radius: 4px; cursor: pointer; font-size: 0.9em;">
+                + Add Ability
+            </button>
+        </div>
+        <div style="border-top: 2px solid #444; margin-bottom: 1em; width: 100%;"></div>
 
-            <!-- Intrigue -->
-            <div style="margin-bottom: 0.5em;"><strong>Intrigue</strong></div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Alertness"> Alertness</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Conceal Object"> Conceal Object</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Disguise"> Disguise</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Eavesdrop"> Eavesdrop</label>
-                </div>
-            </div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Escape Artist"> Escape Artist</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Hide"> Hide</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Pick Lock"> Pick Lock</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Pick Pocket"> Pick Pocket</label>
-                </div>
-            </div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Sabotage"> Sabotage</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Search"> Search</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Sneak"> Sneak</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Track"> Track</label>
-                </div>
-            </div>
-            <div style="border-top: 2px solid #444; margin-bottom: 0.5em; width: 100%;"></div>
+        <!-- Ability Filters -->
+        <div id="ability-filters" style="display: flex; flex-wrap: wrap; gap: 0.5em; margin-bottom: 1em; width: 100%;">
+            <span style="color: #ccc; font-size: 0.9em; margin-right: 0.5em;">Filter by Action Type:</span>
+            <button type="button" class="ability-filter-btn" data-filter="all" style="
+                background: #0078d4; 
+                border: 1px solid #106ebe; 
+                color: #fff; 
+                padding: 0.3em 0.6em; 
+                border-radius: 3px; 
+                cursor: pointer; 
+                font-size: 0.8em;
+            ">All</button>
+            <button type="button" class="ability-filter-btn" data-filter="Free Strike" style="
+                background: #444; 
+                border: 1px solid #666; 
+                color: #fff; 
+                padding: 0.3em 0.6em; 
+                border-radius: 3px; 
+                cursor: pointer; 
+                font-size: 0.8em;
+            ">Free Strike</button>
+            <button type="button" class="ability-filter-btn" data-filter="Main action" style="
+                background: #444; 
+                border: 1px solid #666; 
+                color: #fff; 
+                padding: 0.3em 0.6em; 
+                border-radius: 3px; 
+                cursor: pointer; 
+                font-size: 0.8em;
+            ">Main action</button>
+            <button type="button" class="ability-filter-btn" data-filter="Maneuver" style="
+                background: #444; 
+                border: 1px solid #666; 
+                color: #fff; 
+                padding: 0.3em 0.6em; 
+                border-radius: 3px; 
+                cursor: pointer; 
+                font-size: 0.8em;
+            ">Free maneuver</button>
+            <button type="button" class="ability-filter-btn" data-filter="Triggered action" style="
+                background: #444; 
+                border: 1px solid #666; 
+                color: #fff; 
+                padding: 0.3em 0.6em; 
+                border-radius: 3px; 
+                cursor: pointer; 
+                font-size: 0.8em;
+            ">Triggered action</button>
+            <button type="button" class="ability-filter-btn" data-filter="Free Triggered action" style="
+                background: #444; 
+                border: 1px solid #666; 
+                color: #fff; 
+                padding: 0.3em 0.6em; 
+                border-radius: 3px; 
+                cursor: pointer; 
+                font-size: 0.8em;
+            ">Free triggered action</button>
+            <button type="button" class="ability-filter-btn" data-filter="Passive" style="
+                background: #444; 
+                border: 1px solid #666; 
+                color: #fff; 
+                padding: 0.3em 0.6em; 
+                border-radius: 3px; 
+                cursor: pointer; 
+                font-size: 0.8em;
+            ">Passive</button>
+        </div>
 
-            <!-- Lore -->
-            <div style="margin-bottom: 0.5em;"><strong>Lore</strong></div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Culture"> Culture</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Criminal Und."> Criminal Und.</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="History"> History</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Magic"> Magic</label>
-                </div>
+        <!-- Selected Abilities Container -->
+        <div id="selected-abilities" style="width: 100%; min-height: 2em;">
+            <!-- Selected abilities will appear here dynamically -->
+            <div id="no-abilities-message" style="color: #888; font-style: italic; padding: 1em 0;">
+                No abilities added. Click "Add Ability" to create your first ability.
             </div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Monsters"> Monsters</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Nature"> Nature</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Psionics"> Psionics</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Religion"> Religion</label>
+        </div>
+
+        <!-- Ability Creation Modal (Hidden by default) -->
+        <div id="ability-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; justify-content: center; align-items: center;">
+            <div style="background: #333; border: 2px solid #666; border-radius: 8px; padding: 1.5em; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                <h3 style="margin-top: 0; color: #fff;">Add New Ability</h3>
+                
+                <!-- Ability Name -->
+                <div style="margin-bottom: 1em;">
+                    <label style="display: block; color: #ccc; margin-bottom: 0.5em;">Ability Name:</label>
+                    <input id="ability-name-input" type="text" placeholder="e.g., Coup de Grace" style="width: 100%; padding: 0.5em; background: #222; border: 1px solid #555; color: #fff; border-radius: 4px;">
                 </div>
-            </div>
-            <div class="content-column" style="width: 100%;">
-                <div style="display: flex; flex-wrap: wrap; gap: 1em; margin-bottom: 0.5em;">
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Rumors"> Rumors</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Society"> Society</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Strategy"> Strategy</label>
-                    <label class="field-desc skill-label" style="font-size: 1.1em;"><input type="checkbox" name="skill" value="Timescape"> Timescape</label>
+                
+                <!-- Ability Type -->
+                <div style="margin-bottom: 1em;">
+                    <label style="display: block; color: #ccc; margin-bottom: 0.5em;">Ability Type:</label>
+                    <input id="ability-type-input" type="text" placeholder="e.g., Melee, Ranged, Strike, Weapon" style="width: 100%; padding: 0.5em; background: #222; border: 1px solid #555; color: #fff; border-radius: 4px;">
+                </div>
+                
+                <!-- Keywords -->
+                <div style="margin-bottom: 1em;">
+                    <label style="display: block; color: #ccc; margin-bottom: 0.5em;">Keywords (optional):</label>
+                    <input id="ability-keywords-input" type="text" placeholder="e.g., 3 Insight" style="width: 100%; padding: 0.5em; background: #222; border: 1px solid #555; color: #fff; border-radius: 4px;">
+                </div>
+                
+                <!-- Action Type -->
+                <div style="margin-bottom: 1em;">
+                    <label style="display: block; color: #ccc; margin-bottom: 0.5em;">Action Type:</label>
+                    <select id="ability-action-input" style="width: 100%; padding: 0.5em; background: #222; border: 1px solid #555; color: #fff; border-radius: 4px;">
+                        <option value="">Select action type...</option>
+                        <option value="Free Strike">Free Strike</option>
+                        <option value="Main action">Main action</option>
+                        <option value="Maneuver">Maneuver</option>
+                        <option value="Triggered">Triggered Action</option>
+                        <option value="Free triggered">Free triggered Action</option>
+                        <option value="Passive">Passive</option>
+                    </select>
+                </div>
+                
+                <!-- Target -->
+                <div style="margin-bottom: 1em;">
+                    <label style="display: block; color: #ccc; margin-bottom: 0.5em;">Target:</label>
+                    <input id="ability-target-input" type="text" placeholder="e.g., One creature" style="width: 100%; padding: 0.5em; background: #222; border: 1px solid #555; color: #fff; border-radius: 4px;">
+                </div>
+                
+                <!-- Damage Options -->
+                <div style="margin-bottom: 1em;">
+                    <label style="display: block; color: #ccc; margin-bottom: 0.5em;">Damage Options:</label>
+                    <div id="damage-options" style="border: 1px solid #555; border-radius: 4px; padding: 0.5em; background: #222;">
+                        <div style="margin-bottom: 0.5em;">
+                            <button type="button" id="add-damage-option" style="background: #444; border: 1px solid #666; color: #fff; padding: 0.3em 0.6em; border-radius: 3px; cursor: pointer; font-size: 0.9em;">
+                                + Add Damage Option
+                            </button>
+                        </div>
+                        <div id="damage-list">
+                            <!-- Damage options will be added here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <div style="margin-bottom: 1.5em;">
+                    <label style="display: block; color: #ccc; margin-bottom: 0.5em;">Description:</label>
+                    <textarea id="ability-description-input" placeholder="Describe what this ability does..." style="width: 100%; height: 80px; padding: 0.5em; background: #222; border: 1px solid #555; color: #fff; border-radius: 4px; resize: vertical;"></textarea>
+                </div>
+                
+                <!-- Modal Buttons -->
+                <div style="display: flex; gap: 0.5em; justify-content: flex-end;">
+                    <button id="cancel-ability-btn" type="button" style="background: #666; border: 1px solid #888; color: #fff; padding: 0.4em 1em; border-radius: 4px; cursor: pointer;">
+                        Cancel
+                    </button>
+                    <button id="save-ability-btn" type="button" style="background: #2d5a2d; border: 1px solid #4a8a4a; color: #fff; padding: 0.4em 1em; border-radius: 4px; cursor: pointer;">
+                        Save Ability
+                    </button>
                 </div>
             </div>
         </div>
+    </div>
 </div>

@@ -54,6 +54,28 @@ function collectAllCharacterData() {
     }
     data.inventoryItems = inventoryItems;
     
+    // Collect details tab data (skills, culture, etc.) using new system
+    if (window.getDetailsTabData) {
+        const detailsData = window.getDetailsTabData();
+        Object.assign(data, detailsData);
+    }
+    
+    // Collect notes tab data (multi-page notes system)
+    if (window.getNotesTabData) {
+        const notesData = window.getNotesTabData();
+        Object.assign(data, notesData);
+    }
+    
+    // Count checked victories
+    const victoryCheckboxes = document.querySelectorAll('.victory-checkbox');
+    let victoryCount = 0;
+    victoryCheckboxes.forEach(checkbox => {
+        if (checkbox.checked) {
+            victoryCount++;
+        }
+    });
+    data.victoryCount = victoryCount;
+    
     // Add metadata
     data.lastSaved = new Date().toISOString();
     data.version = "1.0";
@@ -551,6 +573,36 @@ function loadCharacterFromData(data) {
             });
         }
         
+        // Load details tab data using new system
+        if (window.loadDetailsTabData) {
+            // Use a small delay to ensure the details tab is loaded
+            setTimeout(() => {
+                window.loadDetailsTabData(data);
+            }, 100);
+        }
+        
+        // Load notes tab data using new system
+        if (window.loadNotesTabData) {
+            // Use a small delay to ensure the notes tab is loaded
+            setTimeout(() => {
+                window.loadNotesTabData(data);
+            }, 150);
+        }
+        
+        // Restore victory count (check boxes from left to right)
+        if (data.victoryCount !== undefined) {
+            const victoryCheckboxes = document.querySelectorAll('.victory-checkbox');
+            // First, uncheck all victories
+            victoryCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            // Then check the specified number from left to right
+            for (let i = 0; i < Math.min(data.victoryCount, victoryCheckboxes.length); i++) {
+                victoryCheckboxes[i].checked = true;
+            }
+            console.log(`[Load System] Restored ${data.victoryCount} victories`);
+        }
+        
         TS.debug.log("Character data loaded successfully");
         showNotification(`Character "${characterName}" loaded successfully!`, "success");
         
@@ -678,11 +730,37 @@ function createSaveLoadUI() {
 }
 
 // Initialize save system when DOM is ready
+let saveSystemInitialized = false;
 function initializeSaveSystem() {
-    // Use a slight delay to ensure tabs are loaded
+    // Prevent multiple initializations
+    if (saveSystemInitialized) {
+        console.log('[Save System] Already initialized, skipping');
+        return;
+    }
+    
+    console.log('[Save System] Initializing save system');
+    
+    // Check if main tab is available (required for save/load UI)
+    const mainTab = document.getElementById('tab-main');
+    if (!mainTab || mainTab.innerHTML.trim() === '') {
+        console.warn('[Save System] Main tab not ready, retrying in 200ms');
+        setTimeout(initializeSaveSystem, 200);
+        return;
+    }
+    
+    // Mark as initialized before proceeding
+    saveSystemInitialized = true;
+    
+    // Use a slight delay to ensure tabs are fully loaded
     setTimeout(() => {
-        createSaveLoadUI();
-        setupAutoSave();
+        try {
+            createSaveLoadUI();
+            setupAutoSave();
+            console.log('[Save System] Save system initialized successfully');
+        } catch (error) {
+            console.error('[Save System] Failed to initialize:', error);
+            saveSystemInitialized = false; // Allow retry
+        }
     }, 100);
 }
 

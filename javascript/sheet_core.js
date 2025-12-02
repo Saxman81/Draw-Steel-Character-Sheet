@@ -1,50 +1,176 @@
 // Shared logic (tab switching, initialization, storage, TaleSpire API hooks)
+const tabLoadingStates = {
+    main: false,
+    details: false,
+    inventory: false,
+    notes: false,
+    rules: false
+};
+
 function loadTabContent(tabId, fileName) {
-    fetch(fileName)
-        .then(response => response.text())
-        .then(html => {
-            document.getElementById('tab-' + tabId).innerHTML = html;
-            if (tabId === 'inventory' && window.setupInventoryTabHandlers) {
-                window.setupInventoryTabHandlers();
-                // Initialize inventory bonus system for this tab
-                if (window.initializeInventoryBonusSystem) {
-                    setTimeout(() => window.initializeInventoryBonusSystem(), 100);
+    return new Promise((resolve, reject) => {
+        console.log(`[Tab Loading] Starting load for tab: ${tabId}`);
+        
+        fetch(fileName)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Failed to load ${fileName}: ${response.status}`);
                 }
-            }
-            if (tabId === 'main' && window.setupPowerRollHandlers) {
-                window.setupPowerRollHandlers();
-            }
-        });
+                return response.text();
+            })
+            .then(html => {
+                console.log(`[Tab Loading] HTML loaded for tab: ${tabId}`);
+                document.getElementById('tab-' + tabId).innerHTML = html;
+                
+                // Initialize tab-specific handlers after DOM is ready
+                return initializeTabHandlers(tabId);
+            })
+            .then(() => {
+                tabLoadingStates[tabId] = true;
+                console.log(`[Tab Loading] Completed initialization for tab: ${tabId}`);
+                resolve(tabId);
+            })
+            .catch(error => {
+                console.error(`[Tab Loading] Failed to load tab ${tabId}:`, error);
+                reject(error);
+            });
+    });
+}
+
+function initializeTabHandlers(tabId) {
+    return new Promise((resolve) => {
+        console.log(`[Tab Init] Initializing handlers for tab: ${tabId}`);
+        
+        if (tabId === 'main' && window.setupPowerRollHandlers) {
+            window.setupPowerRollHandlers();
+            console.log(`[Tab Init] Power roll handlers initialized`);
+        }
+        
+        if (tabId === 'inventory' && window.setupInventoryTabHandlers) {
+            window.setupInventoryTabHandlers();
+            console.log(`[Tab Init] Inventory handlers initialized`);
+        }
+        
+        if (tabId === 'details' && window.setupDetailsTabHandlers) {
+            window.setupDetailsTabHandlers();
+            console.log(`[Tab Init] Details tab handlers initialized`);
+        }
+        
+        if (tabId === 'notes' && window.setupNotesTabHandlers) {
+            window.setupNotesTabHandlers();
+            console.log(`[Tab Init] Notes tab handlers initialized`);
+        }
+        
+        // Use a small delay to ensure DOM is fully ready
+        setTimeout(() => {
+            resolve();
+        }, 50);
+    });
 }
 
 function showTab(tabId) {
+    console.log(`[Tab Switch] Switching to tab: ${tabId}`);
+    
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById('tab-' + tabId).classList.add('active');
     document.getElementById('tab-btn-' + tabId).classList.add('active');
+    
     // Load tab content if not already loaded
-    if (!document.getElementById('tab-' + tabId).innerHTML.trim()) {
-        if (tabId === 'main') {
-            loadTabContent('main', 'tabs/main_tab.html');
-        } else if (tabId === 'details') {
-            loadTabContent('details', 'tabs/details_tab.html');
-        } else if (tabId === 'inventory') {
-            loadTabContent('inventory', 'tabs/inventory_tab.html');
-        } else if (tabId === 'notes') {
-            loadTabContent('notes', 'tabs/notes_tab.html');
-        } else if (tabId === 'rules') {
-            loadTabContent('rules', 'tabs/rules_tab.html');
+    if (!document.getElementById('tab-' + tabId).innerHTML.trim() && !tabLoadingStates[tabId]) {
+        console.log(`[Tab Switch] Loading content for tab: ${tabId}`);
+        
+        const fileName = getTabFileName(tabId);
+        if (fileName) {
+            loadTabContent(tabId, fileName)
+                .then(() => {
+                    console.log(`[Tab Switch] Tab ${tabId} loaded successfully`);
+                    // If this is the inventory tab, ensure bonus system is initialized
+                    if (tabId === 'inventory' && window.initializeInventoryBonusSystem) {
+                        setTimeout(() => window.initializeInventoryBonusSystem(), 100);
+                    }
+                })
+                .catch(error => {
+                    console.error(`[Tab Switch] Failed to load tab ${tabId}:`, error);
+                });
         }
     }
 }
+
+function getTabFileName(tabId) {
+    const fileMap = {
+        'main': 'tabs/main_tab.html',
+        'details': 'tabs/details_tab.html',
+        'inventory': 'tabs/inventory_tab.html',
+        'notes': 'tabs/notes_tab.html',
+        'rules': 'tabs/rules_tab.html'
+    };
+    return fileMap[tabId];
+}
+// Sequential initialization system
+async function initializeSheet() {
+    console.log('[Initialization] Starting sequential sheet initialization');
+    
+    try {
+        // Load essential tabs first in order of importance
+        console.log('[Initialization] Loading main tab...');
+        await loadTabContent('main', 'tabs/main_tab.html');
+        
+        console.log('[Initialization] Loading details tab...');
+        await loadTabContent('details', 'tabs/details_tab.html');
+        
+        console.log('[Initialization] Loading inventory tab...');
+        await loadTabContent('inventory', 'tabs/inventory_tab.html');
+        
+        // Initialize save system after core tabs are loaded
+        console.log('[Initialization] Initializing save system...');
+        if (typeof initializeSaveSystem === 'function') {
+            await new Promise(resolve => {
+                initializeSaveSystem();
+                setTimeout(resolve, 100); // Allow save system to fully initialize
+            });
+        }
+        
+        // Initialize inventory bonus system after save system
+        console.log('[Initialization] Initializing inventory bonus system...');
+        if (window.initializeInventoryBonusSystem) {
+            await new Promise(resolve => {
+                window.initializeInventoryBonusSystem();
+                setTimeout(resolve, 100); // Allow bonus system to fully initialize
+            });
+        }
+        
+        // Load remaining tabs in background (they're loaded on-demand anyway)
+        Promise.all([
+            loadTabContent('notes', 'tabs/notes_tab.html'),
+            loadTabContent('rules', 'tabs/rules_tab.html')
+        ]).then(() => {
+            console.log('[Initialization] All background tabs loaded');
+        }).catch(error => {
+            console.warn('[Initialization] Some background tabs failed to load:', error);
+        });
+        
+        // Show the main tab
+        showTab('main');
+        console.log('[Initialization] Sheet initialization complete');
+        
+    } catch (error) {
+        console.error('[Initialization] Failed to initialize sheet:', error);
+        // Fallback to simple initialization
+        showTab('main');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
-    showTab('main');
+    initializeSheet();
 });
 window.showTab = showTab;
 
 var clearStorageButton = undefined;
 
-function initSheet() {
+function initSheetHandlers() {
+    console.log('[Sheet Init] Setting up sheet handlers and inputs');
+    
     // Set up power roll handlers first
     setupPowerRollHandlers();
 
@@ -53,7 +179,13 @@ function initSheet() {
     for (let input of inputs) {
         if (input.id != undefined && input.id != "clear-storage") {
             input.addEventListener("change", function() {
-                onInputChange(input)
+                // Use new auto-save system instead of old localStorage
+                if (window.autoSaveCharacterData) {
+                    window.autoSaveCharacterData();
+                } else {
+                    // Fallback to old system if new one isn't available
+                    onInputChange(input);
+                }
             });
 
             let titleSibling = findFirstSiblingWithClass(input, "field-title");
@@ -100,42 +232,27 @@ function initSheet() {
 }
 
 function onInputChange(input) {
-    //handles input changes to store them in local storage
-
-    let data;
-    // get already stored data
-    TS.localStorage.campaign.getBlob().then((storedData) => {
-        //parse stored blob as json, but also handle if it's empty by
-        //defaulting to an empty json document "{}" if stored data is false
-        data = JSON.parse(storedData || "{}");
-        if (input.type == "checkbox") {
-            data[input.id] = input.checked ? "on" : "off";
-        } else {
-            data[input.id] = input.value;
-        }
-        //set new data, handle response
-        TS.localStorage.campaign.setBlob(JSON.stringify(data)).then(() => {
-            //if storing the data succeeded, enable the clear storage button
-            clearStorageButton.classList.add("danger");
-            clearStorageButton.disabled = false;
-            clearStorageButton.textContent = "Clear Character Sheet";
-            
-            // Trigger auto-save to file when character name changes
-            if (input.id === 'character-name' && window.saveCharacterData) {
-                setTimeout(() => window.saveCharacterData(), 500);
-            }
-        }).catch((setBlobResponse) => {
-            TS.debug.log("Failed to store change to local storage: " + setBlobResponse.cause);
-            console.error("Failed to store change to local storage:", setBlobResponse);
-        });
-    }).catch((getBlobResponse) => {
-        TS.debug.log("Failed to load data from local storage: " + getBlobResponse.cause);
-        console.error("Failed to load data from local storage:", getBlobResponse);
-    });
-
+    // Legacy input change handler - now primarily used as fallback
+    // The new save system handles most saving automatically
+    
+    console.log('[Legacy Save] Input changed:', input.id);
+    
+    // Only handle basic UI updates, let the new save system handle storage
+    if (clearStorageButton) {
+        clearStorageButton.classList.add("danger");
+        clearStorageButton.disabled = false;
+        clearStorageButton.textContent = "Clear Character Sheet";
+    }
+    
+    // Handle abilities text parsing (still needed for functionality)
     if (input.id == "abilities-text") {
         let actions = parseActions(input.value);
         addActions(actions);
+    }
+    
+    // Trigger new save system if available
+    if (window.autoSaveCharacterData) {
+        window.autoSaveCharacterData();
     }
 }
 
@@ -279,29 +396,95 @@ function globalRollLogger(event) {
     TS.debug.log("GLOBAL LOGGER: Roll event received: " + JSON.stringify(event));
 }
 
-function onStateChangeEvent(msg) {
+async function onStateChangeEvent(msg) {
     if (msg.kind == "hasInitialized") {
-        clearStorageButton = document.getElementById("clear-storage");
-        loadStoredData();
-        initSheet();
+        console.log('[TaleSpire] TaleSpire has initialized, starting sequential setup');
         
-        // Initialize save system
-        if (window.initializeSaveSystem) {
-            window.initializeSaveSystem();
+        try {
+            // Set up clear storage button first
+            clearStorageButton = document.getElementById("clear-storage");
+            
+            // Wait for essential systems to be ready
+            await waitForEssentialSystems();
+            
+            // Initialize core sheet functionality
+            initSheetHandlers();
+            
+            // Load stored data after sheet is initialized
+            loadStoredData();
+            
+            // Initialize systems in proper order after data is loaded
+            await initializeSystemsSequentially();
+            
+            // Set up TaleSpire event handlers
+            setupTaleSpireEventHandlers();
+            
+            console.log('[TaleSpire] Sequential initialization complete');
+            
+        } catch (error) {
+            console.error('[TaleSpire] Failed during sequential initialization:', error);
+            // Fallback to basic initialization
+            fallbackInitialization();
         }
-        
-        // Initialize inventory bonus system
-        if (window.initializeInventoryBonusSystem) {
-            window.initializeInventoryBonusSystem();
-        }
-        
-        TS.onRollResult.add(handleRollResult);
-        TS.debug.log("Subscribed to TS.onRollResult");
-        if (TS.dice && TS.dice.onRollResult) {
-            TS.dice.onRollResult.add(handleRollResult);
-            TS.dice.onRollResult.add(globalRollLogger);
-            TS.debug.log("Subscribed to TS.dice.onRollResult and global logger");
-        }
-        TS.debug.log("Initialized and subscribed to roll events");
     }
+}
+
+async function waitForEssentialSystems() {
+    // Wait for essential tabs to be loaded before proceeding
+    const maxWaitTime = 5000; // 5 seconds max
+    const startTime = Date.now();
+    
+    while (!tabLoadingStates.main && (Date.now() - startTime) < maxWaitTime) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    if (!tabLoadingStates.main) {
+        console.warn('[TaleSpire] Main tab not loaded within timeout, proceeding anyway');
+    }
+}
+
+async function initializeSystemsSequentially() {
+    // Initialize save system first
+    if (window.initializeSaveSystem) {
+        console.log('[TaleSpire] Initializing save system...');
+        window.initializeSaveSystem();
+        await new Promise(resolve => setTimeout(resolve, 200));
+    }
+    
+    // Initialize inventory bonus system after save system
+    if (window.initializeInventoryBonusSystem) {
+        console.log('[TaleSpire] Initializing inventory bonus system...');
+        window.initializeInventoryBonusSystem();
+        await new Promise(resolve => setTimeout(resolve, 200));
+    }
+}
+
+function setupTaleSpireEventHandlers() {
+    TS.onRollResult.add(handleRollResult);
+    TS.debug.log("Subscribed to TS.onRollResult");
+    
+    if (TS.dice && TS.dice.onRollResult) {
+        TS.dice.onRollResult.add(handleRollResult);
+        TS.dice.onRollResult.add(globalRollLogger);
+        TS.debug.log("Subscribed to TS.dice.onRollResult and global logger");
+    }
+    
+    TS.debug.log("Initialized and subscribed to roll events");
+}
+
+function fallbackInitialization() {
+    console.log('[TaleSpire] Using fallback initialization');
+    clearStorageButton = document.getElementById("clear-storage");
+    loadStoredData();
+    initSheetHandlers();
+    
+    if (window.initializeSaveSystem) {
+        window.initializeSaveSystem();
+    }
+    
+    if (window.initializeInventoryBonusSystem) {
+        window.initializeInventoryBonusSystem();
+    }
+    
+    setupTaleSpireEventHandlers();
 }

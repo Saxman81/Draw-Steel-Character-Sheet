@@ -251,21 +251,48 @@ function updateBaseStatValue(statId, newValue) {
 }
 
 // Initialize the system when the page loads
+let inventoryBonusSystemInitialized = false;
 function initializeInventoryBonusSystem() {
+    // Prevent multiple initializations
+    if (inventoryBonusSystemInitialized) {
+        console.log('[Inventory] Bonus system already initialized, skipping');
+        return;
+    }
+    
+    console.log('[Inventory] Initializing bonus system');
+    
+    // Check if required elements are available
+    const inventoryList = document.getElementById('inventory-list');
+    if (!inventoryList) {
+        console.warn('[Inventory] Inventory list not found, retrying in 200ms');
+        setTimeout(initializeInventoryBonusSystem, 200);
+        return;
+    }
+    
     // Set up change listeners for base stats
     const statIds = ['might', 'agility', 'reason', 'intuition', 'presence', 'stamina-max', 'recoveries-max', 'recoveries-stamina'];
+    let foundStats = 0;
     
     statIds.forEach(statId => {
         const element = document.getElementById(statId);
         if (element) {
+            foundStats++;
             element.addEventListener('blur', function() {
                 updateBaseStatValue(statId, this.value);
             });
         }
     });
     
-    // Initial calculation
-    setTimeout(recalculateItemBonuses, 100);
+    console.log(`[Inventory] Found ${foundStats}/${statIds.length} stat elements`);
+    
+    // Mark as initialized
+    inventoryBonusSystemInitialized = true;
+    
+    // Initial calculation after a brief delay to ensure all systems are ready
+    setTimeout(() => {
+        console.log('[Inventory] Running initial bonus calculation');
+        recalculateItemBonuses();
+    }, 200);
 }
 
 window.setupInventoryTabHandlers = setupInventoryTabHandlers;
