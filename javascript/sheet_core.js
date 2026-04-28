@@ -9,8 +9,6 @@ const tabLoadingStates = {
 
 function loadTabContent(tabId, fileName) {
     return new Promise((resolve, reject) => {
-        console.log(`[Tab Loading] Starting load for tab: ${tabId}`);
-        
         fetch(fileName)
             .then(response => {
                 if (!response.ok) {
@@ -19,7 +17,6 @@ function loadTabContent(tabId, fileName) {
                 return response.text();
             })
             .then(html => {
-                console.log(`[Tab Loading] HTML loaded for tab: ${tabId}`);
                 document.getElementById('tab-' + tabId).innerHTML = html;
                 
                 // Initialize tab-specific handlers after DOM is ready
@@ -27,7 +24,6 @@ function loadTabContent(tabId, fileName) {
             })
             .then(() => {
                 tabLoadingStates[tabId] = true;
-                console.log(`[Tab Loading] Completed initialization for tab: ${tabId}`);
                 resolve(tabId);
             })
             .catch(error => {
@@ -39,26 +35,20 @@ function loadTabContent(tabId, fileName) {
 
 function initializeTabHandlers(tabId) {
     return new Promise((resolve) => {
-        console.log(`[Tab Init] Initializing handlers for tab: ${tabId}`);
-        
         if (tabId === 'main' && window.setupPowerRollHandlers) {
             window.setupPowerRollHandlers();
-            console.log(`[Tab Init] Power roll handlers initialized`);
         }
         
         if (tabId === 'inventory' && window.setupInventoryTabHandlers) {
             window.setupInventoryTabHandlers();
-            console.log(`[Tab Init] Inventory handlers initialized`);
         }
         
         if (tabId === 'details' && window.setupDetailsTabHandlers) {
             window.setupDetailsTabHandlers();
-            console.log(`[Tab Init] Details tab handlers initialized`);
         }
         
         if (tabId === 'notes' && window.setupNotesTabHandlers) {
             window.setupNotesTabHandlers();
-            console.log(`[Tab Init] Notes tab handlers initialized`);
         }
         
         // Use a small delay to ensure DOM is fully ready
@@ -69,8 +59,6 @@ function initializeTabHandlers(tabId) {
 }
 
 function showTab(tabId) {
-    console.log(`[Tab Switch] Switching to tab: ${tabId}`);
-    
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
     document.getElementById('tab-' + tabId).classList.add('active');
@@ -78,16 +66,17 @@ function showTab(tabId) {
     
     // Load tab content if not already loaded
     if (!document.getElementById('tab-' + tabId).innerHTML.trim() && !tabLoadingStates[tabId]) {
-        console.log(`[Tab Switch] Loading content for tab: ${tabId}`);
-        
         const fileName = getTabFileName(tabId);
         if (fileName) {
             loadTabContent(tabId, fileName)
                 .then(() => {
-                    console.log(`[Tab Switch] Tab ${tabId} loaded successfully`);
                     // If this is the inventory tab, ensure bonus system is initialized
                     if (tabId === 'inventory' && window.initializeInventoryBonusSystem) {
                         setTimeout(() => window.initializeInventoryBonusSystem(), 100);
+                    }
+                    // Also resize any existing textareas
+                    if (tabId === 'inventory' && window.resizeAllInventoryTextareas) {
+                        setTimeout(() => window.resizeAllInventoryTextareas(), 200);
                     }
                 })
                 .catch(error => {
@@ -109,21 +98,15 @@ function getTabFileName(tabId) {
 }
 // Sequential initialization system
 async function initializeSheet() {
-    console.log('[Initialization] Starting sequential sheet initialization');
-    
     try {
         // Load essential tabs first in order of importance
-        console.log('[Initialization] Loading main tab...');
         await loadTabContent('main', 'tabs/main_tab.html');
         
-        console.log('[Initialization] Loading details tab...');
         await loadTabContent('details', 'tabs/details_tab.html');
         
-        console.log('[Initialization] Loading inventory tab...');
         await loadTabContent('inventory', 'tabs/inventory_tab.html');
         
         // Initialize save system after core tabs are loaded
-        console.log('[Initialization] Initializing save system...');
         if (typeof initializeSaveSystem === 'function') {
             await new Promise(resolve => {
                 initializeSaveSystem();
@@ -132,7 +115,6 @@ async function initializeSheet() {
         }
         
         // Initialize inventory bonus system after save system
-        console.log('[Initialization] Initializing inventory bonus system...');
         if (window.initializeInventoryBonusSystem) {
             await new Promise(resolve => {
                 window.initializeInventoryBonusSystem();
@@ -145,14 +127,13 @@ async function initializeSheet() {
             loadTabContent('notes', 'tabs/notes_tab.html'),
             loadTabContent('rules', 'tabs/rules_tab.html')
         ]).then(() => {
-            console.log('[Initialization] All background tabs loaded');
+            // Background tabs loaded
         }).catch(error => {
-            console.warn('[Initialization] Some background tabs failed to load:', error);
+            console.error('[Initialization] Some background tabs failed to load:', error);
         });
         
         // Show the main tab
         showTab('main');
-        console.log('[Initialization] Sheet initialization complete');
         
     } catch (error) {
         console.error('[Initialization] Failed to initialize sheet:', error);
@@ -169,8 +150,6 @@ window.showTab = showTab;
 var clearStorageButton = undefined;
 
 function initSheetHandlers() {
-    console.log('[Sheet Init] Setting up sheet handlers and inputs');
-    
     // Set up power roll handlers first
     setupPowerRollHandlers();
 
@@ -234,8 +213,6 @@ function initSheetHandlers() {
 function onInputChange(input) {
     // Legacy input change handler - now primarily used as fallback
     // The new save system handles most saving automatically
-    
-    console.log('[Legacy Save] Input changed:', input.id);
     
     // Only handle basic UI updates, let the new save system handle storage
     if (clearStorageButton) {
@@ -398,8 +375,6 @@ function globalRollLogger(event) {
 
 async function onStateChangeEvent(msg) {
     if (msg.kind == "hasInitialized") {
-        console.log('[TaleSpire] TaleSpire has initialized, starting sequential setup');
-        
         try {
             // Set up clear storage button first
             clearStorageButton = document.getElementById("clear-storage");
@@ -419,8 +394,6 @@ async function onStateChangeEvent(msg) {
             // Set up TaleSpire event handlers
             setupTaleSpireEventHandlers();
             
-            console.log('[TaleSpire] Sequential initialization complete');
-            
         } catch (error) {
             console.error('[TaleSpire] Failed during sequential initialization:', error);
             // Fallback to basic initialization
@@ -439,21 +412,19 @@ async function waitForEssentialSystems() {
     }
     
     if (!tabLoadingStates.main) {
-        console.warn('[TaleSpire] Main tab not loaded within timeout, proceeding anyway');
+        // Main tab not loaded within timeout, proceeding anyway
     }
 }
 
 async function initializeSystemsSequentially() {
     // Initialize save system first
     if (window.initializeSaveSystem) {
-        console.log('[TaleSpire] Initializing save system...');
         window.initializeSaveSystem();
         await new Promise(resolve => setTimeout(resolve, 200));
     }
     
     // Initialize inventory bonus system after save system
     if (window.initializeInventoryBonusSystem) {
-        console.log('[TaleSpire] Initializing inventory bonus system...');
         window.initializeInventoryBonusSystem();
         await new Promise(resolve => setTimeout(resolve, 200));
     }
@@ -473,7 +444,6 @@ function setupTaleSpireEventHandlers() {
 }
 
 function fallbackInitialization() {
-    console.log('[TaleSpire] Using fallback initialization');
     clearStorageButton = document.getElementById("clear-storage");
     loadStoredData();
     initSheetHandlers();

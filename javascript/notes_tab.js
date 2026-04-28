@@ -6,8 +6,6 @@ let currentNotesPageId = null; // Currently active page ID
 let nextNotesPageId = 1; // Counter for generating unique IDs
 
 function setupNotesTabHandlers() {
-    console.log('[Notes Tab] Setting up handlers');
-    
     // Set up notes page management system
     setupNotesPageManagement();
     

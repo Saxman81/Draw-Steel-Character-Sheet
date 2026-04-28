@@ -46,13 +46,19 @@ function collectAllCharacterData() {
                 }
             });
             
-            // Only save items that have a name or description
-            if (itemData.name || itemData.description) {
+            // Save items that have a name, description, or any stat bonuses
+            const hasContent = itemData.name.trim() || itemData.description.trim() || Object.keys(itemData.bonuses).length > 0;
+            if (hasContent) {
                 inventoryItems.push(itemData);
             }
         });
     }
     data.inventoryItems = inventoryItems;
+    
+    // Save base stat values for inventory bonus system
+    if (window.baseStatValues) {
+        data.baseStatValues = window.baseStatValues;
+    }
     
     // Collect details tab data (skills, culture, etc.) using new system
     if (window.getDetailsTabData) {
@@ -124,7 +130,6 @@ function saveCharacterData() {
     // Save to TaleSpire localStorage system (like the sample code)
     saveTaleSpireCharacterData(data, characterName).then((result) => {
         TS.debug.log("Character data saved successfully");
-        console.log(`[Save System] Data saved to TaleSpire localStorage successfully`);
         
         // Check if this was an update or new save based on whether we got back an existing ID
         const wasUpdate = result && result.includes('character-') && parseInt(result.split('-')[1]) < (Date.now() - 1000);
@@ -241,87 +246,12 @@ async function cleanupDuplicateCharacters() {
 function loadCharacterFromFile(fileContent) {
     try {
         const data = JSON.parse(fileContent);
-        
-        // Get character name for display
-        const characterName = data['character-name'] || 'Unknown Character';
-        console.log(`[Load System] Loading character: ${characterName}`);
-        
-        // Load regular input data
-        Object.keys(data).forEach(key => {
-            if (key === 'inventoryItems' || key === 'lastSaved' || key === 'version' || 
-                key === 'savedCharacters') {
-                return; // Skip special keys
-            }
-            
-            const element = document.getElementById(key);
-            if (element) {
-                if (element.type === 'checkbox') {
-                    element.checked = data[key];
-                } else {
-                    element.value = data[key];
-                }
-                // Trigger change event to update any dependent functionality
-                element.dispatchEvent(new Event('change'));
-            }
-        });
-        
-        // Load inventory items with enhanced data structure
-        if (data.inventoryItems && Array.isArray(data.inventoryItems)) {
-            // Clear existing inventory
-            const inventoryList = document.getElementById('inventory-list');
-            if (inventoryList) {
-                inventoryList.innerHTML = '';
-            }
-            
-            // Add each inventory item
-            data.inventoryItems.forEach(item => {
-                if (window.addInventoryItem) {
-                    const itemElement = window.addInventoryItem();
-                    
-                    // Set basic item data
-                    const quantityInput = itemElement.querySelector('input[type="number"]');
-                    const nameTextarea = itemElement.querySelector('textarea[data-field="name"]');
-                    const descTextarea = itemElement.querySelector('textarea[data-field="description"]');
-                    
-                    if (quantityInput && item.quantity !== undefined) {
-                        quantityInput.value = item.quantity;
-                    }
-                    if (nameTextarea && item.name) {
-                        nameTextarea.value = item.name;
-                        if (window.autoResizeTextarea) window.autoResizeTextarea(nameTextarea);
-                    }
-                    if (descTextarea && item.description) {
-                        descTextarea.value = item.description;
-                        if (window.autoResizeTextarea) window.autoResizeTextarea(descTextarea);
-                    }
-                    
-                    // Set stat bonuses
-                    if (item.bonuses && typeof item.bonuses === 'object') {
-                        Object.keys(item.bonuses).forEach(stat => {
-                            const bonusInput = itemElement.querySelector(`.stat-bonus[data-stat="${stat}"]`);
-                            if (bonusInput) {
-                                bonusInput.value = item.bonuses[stat];
-                            }
-                        });
-                    }
-                }
-            });
-            
-            // Recalculate bonuses after loading all items
-            setTimeout(() => {
-                if (window.recalculateItemBonuses) {
-                    window.recalculateItemBonuses();
-                }
-            }, 100);
-        }
-        
-        TS.debug.log("Character data loaded successfully");
-        showNotification("Character loaded successfully!", "success");
-        
+        loadCharacterFromData(data);
     } catch (error) {
         TS.debug.log("Failed to load character data: " + error.message);
         console.error("Failed to load character data:", error);
         showNotification("Failed to load character data!", "error");
+        window.isLoadingCharacterData = false;
     }
 }
 
@@ -526,14 +456,35 @@ function loadCharacterByName(characterName) {
 
 function loadCharacterFromData(data) {
     try {
+        // Set loading flag to prevent inventory system from interfering
+        window.isLoadingCharacterData = true;
+        
         // Get character name for display
         const characterName = data.characterName || data['character-name'] || 'Unknown Character';
         console.log(`[Load System] Loading character: ${characterName}`);
         
+        // Clear any existing inventory system state to prevent contamination between characters
+        if (window.clearInventorySystemState) {
+            window.clearInventorySystemState();
+        } else {
+            console.log('[Load System] Clearing base stat values (fallback)');
+            window.baseStatValues = null;
+        }
+        window.currentCharacterId = data.characterId || characterName;
+        
+        // Restore base stat values first
+        if (data.baseStatValues) {
+            window.baseStatValues = data.baseStatValues;
+            console.log('[Load System] Restored base stat values');
+        }
+        
+        // Define stat fields that should use base values instead of saved values
+        const statFields = ['might', 'agility', 'reason', 'intuition', 'presence', 'stamina-max', 'recoveries-max', 'recoveries-stamina'];
+        
         // Load regular input data
         Object.keys(data).forEach(key => {
             if (key === 'inventoryItems' || key === 'lastSaved' || key === 'version' || 
-                key === 'savedCharacters' || key === 'savedAt' || key === 'characterId') {
+                key === 'savedCharacters' || key === 'savedAt' || key === 'characterId' || key === 'baseStatValues') {
                 return; // Skip special keys
             }
             
@@ -542,15 +493,22 @@ function loadCharacterFromData(data) {
                 if (element.type === 'checkbox') {
                     element.checked = data[key];
                 } else {
-                    element.value = data[key];
+                    // For stat fields, use base value if available, otherwise use saved value
+                    if (statFields.includes(key) && window.baseStatValues && window.baseStatValues[key] !== undefined) {
+                        element.value = window.baseStatValues[key];
+                    } else {
+                        element.value = data[key];
+                    }
                 }
                 // Trigger change event to update any dependent functionality
                 element.dispatchEvent(new Event('change'));
             }
         });
         
-        // Load inventory items
+        // Load inventory items with proper bonus handling
         if (data.inventoryItems && Array.isArray(data.inventoryItems)) {
+            console.log('[Load System] Loading inventory items');
+            
             // Clear existing inventory
             const inventoryList = document.getElementById('inventory-list');
             if (inventoryList) {
@@ -561,16 +519,72 @@ function loadCharacterFromData(data) {
             data.inventoryItems.forEach(item => {
                 if (window.addInventoryItem) {
                     const itemElement = window.addInventoryItem();
-                    const itemInputs = itemElement.querySelectorAll('input, textarea');
-                    itemInputs.forEach(input => {
-                        if (input.placeholder === 'Item') {
-                            input.value = item.name || '';
-                        } else if (input.placeholder === 'Description') {
-                            input.value = item.description || '';
+                    
+                    // Set basic item data
+                    const quantityInput = itemElement.querySelector('input[type="number"]');
+                    const nameTextarea = itemElement.querySelector('textarea[data-field="name"]');
+                    const descTextarea = itemElement.querySelector('textarea[data-field="description"]');
+                    
+                    if (quantityInput && item.quantity !== undefined) {
+                        quantityInput.value = item.quantity;
+                    }
+                    if (nameTextarea && item.name) {
+                        nameTextarea.value = item.name;
+                        if (window.autoResizeTextarea) {
+                            // Use requestAnimationFrame to ensure DOM is updated
+                            requestAnimationFrame(() => {
+                                setTimeout(() => window.autoResizeTextarea(nameTextarea), 0);
+                            });
                         }
-                    });
+                    }
+                    if (descTextarea && item.description) {
+                        descTextarea.value = item.description;
+                        if (window.autoResizeTextarea) {
+                            // Use requestAnimationFrame to ensure DOM is updated
+                            requestAnimationFrame(() => {
+                                setTimeout(() => window.autoResizeTextarea(descTextarea), 0);
+                            });
+                        }
+                    }
+                    
+                    // Set stat bonuses
+                    if (item.bonuses && typeof item.bonuses === 'object') {
+                        Object.keys(item.bonuses).forEach(stat => {
+                            const bonusInput = itemElement.querySelector(`.stat-bonus[data-stat="${stat}"]`);
+                            if (bonusInput) {
+                                bonusInput.value = item.bonuses[stat];
+                            }
+                        });
+                    }
                 }
             });
+            
+            // Clear loading flag and then recalculate bonuses
+            setTimeout(() => {
+                // Clear loading flag first
+                window.isLoadingCharacterData = false;
+                console.log('[Load System] Character loading complete');
+                
+                // Then recalculate bonuses now that loading is complete
+                if (window.recalculateItemBonuses) {
+                    window.recalculateItemBonuses();
+                }
+                
+                // Final resize pass for all textareas after everything is loaded
+                if (window.resizeAllInventoryTextareas) {
+                    setTimeout(() => window.resizeAllInventoryTextareas(), 50);
+                    // Extra aggressive resize in case the first one doesn't work
+                    setTimeout(() => window.resizeAllInventoryTextareas(), 200);
+                    setTimeout(() => window.resizeAllInventoryTextareas(), 500);
+                }
+            }, 100);
+        } else {
+            // No inventory items, but still need to handle base stat values
+            setTimeout(() => {
+                // Clear loading flag since no inventory processing needed
+                window.isLoadingCharacterData = false;
+                console.log('[Load System] Character loading complete');
+            }, 100);
         }
         
         // Load details tab data using new system
@@ -656,17 +670,19 @@ function setupAutoSave() {
     // Auto-save every 30 seconds if there's been a change
     let hasUnsavedChanges = false;
     
-    // Track changes
+    // Track changes (but not during loading)
     const inputs = document.querySelectorAll('input, textarea, select');
     inputs.forEach(input => {
         input.addEventListener('change', () => {
-            hasUnsavedChanges = true;
+            if (!window.isLoadingCharacterData) {
+                hasUnsavedChanges = true;
+            }
         });
     });
     
     // Auto-save interval
     setInterval(() => {
-        if (hasUnsavedChanges) {
+        if (hasUnsavedChanges && !window.isLoadingCharacterData) {
             const data = collectAllCharacterData();
             const characterName = getCharacterName();
             
@@ -764,9 +780,32 @@ function initializeSaveSystem() {
     }, 100);
 }
 
+// Auto-save function that respects loading state and debounces calls
+let autoSaveDebounceTimer = null;
+function autoSaveCharacterData() {
+    if (window.isLoadingCharacterData) {
+        console.log('[Auto-Save] Skipping auto-save during character loading');
+        return;
+    }
+    
+    // Debounce auto-saves to prevent infinite loops
+    clearTimeout(autoSaveDebounceTimer);
+    autoSaveDebounceTimer = setTimeout(() => {
+        const data = collectAllCharacterData();
+        const characterName = getCharacterName();
+        
+        saveTaleSpireCharacterData(data, characterName).then(() => {
+            console.log(`[Auto-Save] Character "${characterName}" auto-saved successfully`);
+        }).catch((error) => {
+            console.error('[Auto-Save] Auto-save failed:', error);
+        });
+    }, 1000); // 1 second debounce
+}
+
 // Export functions for use in other modules
 window.saveCharacterData = saveCharacterData;
 window.loadCharacterFromFile = loadCharacterFromFile;
 window.collectAllCharacterData = collectAllCharacterData;
+window.autoSaveCharacterData = autoSaveCharacterData;
 window.initializeSaveSystem = initializeSaveSystem;
 window.cleanupDuplicateCharacters = cleanupDuplicateCharacters;
